@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -16,37 +15,45 @@ namespace Elevator
         public event Action OnMovementFinished;
         public event Action OnMovementStarted;
 
-        bool CanMoveCheck => doors.IsClosed && !isMoving && transform.position != positionToMove;
-
         public void TryMove(int floor)
         {
-            StartCoroutine(TryMoveCoroutine(floor));
-        }
+            if (doors.IsBlocked)
+                return;
 
-        IEnumerator TryMoveCoroutine(int floor)
-        {
             doors.CanOpen = false;
 
-            if (!doors.IsClosed)
+            if (SameFloorCheck(floor))
             {
-                doors.TryClose();
-                yield return new WaitForSeconds(config.doorsClosingTime);
-            }
-
-            positionToMove = config.GetPositionToMove(floor);
-
-            if (CanMoveCheck)
-            {
-                StopMoving();
-                var tween = transform.DOMove(config.GetPositionToMove(floor),
-                    config.movementDuration);
-                tween.onComplete += FinishMovement;
-                isMoving = true;
-                doors.CanOpen = false;
-                OnMovementStarted?.Invoke();
-            }
-            else
                 doors.CanOpen = true;
+                doors.TryOpen();
+                return;
+            }
+
+            if (isMoving)
+                return;
+
+            if (doors.IsClosed)
+                TryMoveElevator(floor);
+            else
+                doors.TryClose(() => TryMoveElevator(floor));
+        }
+
+        bool SameFloorCheck(int floor)
+        {
+            return transform.position == config.GetPositionToMove(floor);
+        }
+
+        void TryMoveElevator(int floor)
+        {
+            positionToMove = config.GetPositionToMove(floor);
+            StopMoving();
+
+            var tween = transform.DOMove(config.GetPositionToMove(floor),
+                config.movementDuration);
+            tween.onComplete += FinishMovement;
+            isMoving = true;
+            OnMovementStarted?.Invoke();
+            Debug.Log("[ElevatorController] Start moving");
         }
 
         void StopMoving()
@@ -59,6 +66,7 @@ namespace Elevator
         {
             Reset();
             doors.TryOpen();
+            doors.IsClosed = false;
             transform.position = positionToMove;
             OnMovementFinished?.Invoke();
         }

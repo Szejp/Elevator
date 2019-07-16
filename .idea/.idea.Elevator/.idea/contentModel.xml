@@ -23,6 +23,11 @@
         </e>
         <e p="Scripts" t="Include">
           <e p="AutomaticDoors" t="Include">
+            <e p="AnimationTriggers" t="Include">
+              <e p="DoorsAnimatorTrigger.cs" t="Include" />
+              <e p="DoorsCloseAnimatorTrigger.cs" t="Include" />
+              <e p="DoorsClosedAnimatorTrigger.cs" t="Include" />
+            </e>
             <e p="AutomaticDoors.cs" t="Include" />
           </e>
           <e p="Elevator" t="Include">

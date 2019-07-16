@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Elevator
+namespace Elevator.ElevatorSounds
 {
     public class ElevatorSoundController : MonoBehaviour
     {

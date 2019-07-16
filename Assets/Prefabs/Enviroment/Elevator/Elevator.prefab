@@ -3562,8 +3562,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 6715237499396879444}
-  triggers:
-  - {fileID: 6715237499741267458}
+  trigger: {fileID: 6715237499741267458}
 --- !u!1 &6715237499741267462
 GameObject:
   m_ObjectHideFlags: 0
