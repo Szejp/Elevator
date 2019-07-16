@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Helpers;
 using Player.Interaction.Interfaces;
@@ -8,12 +9,27 @@ namespace Player.Interaction
     public class PlayerInteraction : MonoBehaviour
     {
         readonly Vector3 screenPoint = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-        
+
         [SerializeField] Camera camera;
         [SerializeField] PlayerInteractionConfig config;
 
         RaycastHit[] castResult;
         Ray ray;
+        bool isInteractionAvailable;
+
+        public static event Action<bool> OnInteractionStatusChanged;
+
+        public bool IsInteractionAvailable
+        {
+            get { return isInteractionAvailable; }
+            private set
+            {
+                if (value != isInteractionAvailable)
+                    OnInteractionStatusChanged?.Invoke(value);
+
+                isInteractionAvailable = value;
+            }
+        }
 
         public Camera Camera
         {
@@ -32,11 +48,16 @@ namespace Player.Interaction
             castResult = Physics.RaycastAll(ray, config.maxDistance, 1 << Layers.INTERACTABLE_LAYER_ID);
 
             if (castResult != null && castResult.Any())
+            {
+                IsInteractionAvailable = true;
                 Debug.Log("[PlayerInteraction] cast result: " + castResult);
 
-            if (Input.GetKey(PlayerKeys.InteractionKeyCode) && castResult != null)
-                foreach (var r in castResult)
-                    r.collider.GetComponent<IInteractable>()?.Interact();
+                if (Input.GetKey(PlayerKeys.InteractionKeyCode))
+                    foreach (var r in castResult)
+                        r.collider.GetComponent<IInteractable>()?.Interact();
+            }
+            else
+                IsInteractionAvailable = false;
         }
     }
 }

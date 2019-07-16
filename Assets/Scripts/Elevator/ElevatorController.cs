@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -9,10 +10,13 @@ namespace Elevator
         [SerializeField] ElevatorConfig config;
         [SerializeField] AutomaticDoors.AutomaticDoors doors;
 
-        Vector3 initialPosition;
         bool isMoving;
+        Vector3 positionToMove;
 
-        bool CanMoveElevator => doors.IsClosed && !isMoving;
+        public event Action OnMovementFinished;
+        public event Action OnMovementStarted;
+
+        bool CanMoveCheck => doors.IsClosed && !isMoving && transform.position != positionToMove;
 
         public void TryMove(int floor)
         {
@@ -29,13 +33,17 @@ namespace Elevator
                 yield return new WaitForSeconds(config.doorsClosingTime);
             }
 
-            if (CanMoveElevator)
+            positionToMove = config.GetPositionToMove(floor);
+
+            if (CanMoveCheck)
             {
                 StopMoving();
-                var tween = transform.DOMove(initialPosition + config.GetMovementVector(floor),
+                var tween = transform.DOMove(config.GetPositionToMove(floor),
                     config.movementDuration);
                 tween.onComplete += FinishMovement;
                 isMoving = true;
+                doors.CanOpen = false;
+                OnMovementStarted?.Invoke();
             }
             else
                 doors.CanOpen = true;
@@ -51,17 +59,14 @@ namespace Elevator
         {
             Reset();
             doors.TryOpen();
+            transform.position = positionToMove;
+            OnMovementFinished?.Invoke();
         }
 
         void Reset()
         {
             isMoving = false;
             doors.CanOpen = true;
-        }
-
-        void Awake()
-        {
-            initialPosition = transform.position;
         }
 
 #if UNITY_EDITOR

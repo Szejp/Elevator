@@ -29,6 +29,10 @@
             <e p="ElevatorButton.cs" t="Include" />
             <e p="ElevatorConfig.cs" t="Include" />
             <e p="ElevatorController.cs" t="Include" />
+            <e p="ElevatorSounds" t="Include">
+              <e p="ElevatorSoundController.cs" t="Include" />
+              <e p="ElevatorSoundsConfig.cs" t="Include" />
+            </e>
           </e>
           <e p="Helpers" t="Include">
             <e p="AnimationHelper.cs" t="Include" />
@@ -46,6 +50,16 @@
               <e p="PlayerInteractionConfig.cs" t="Include" />
             </e>
           </e>
+          <e p="UI" t="Include">
+            <e p="PlayerInfo" t="Include">
+              <e p="PlayerInfoConfig.cs" t="Include" />
+              <e p="PlayerInfoText.cs" t="Include" />
+            </e>
+            <e p="UIController.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Shaders" t="Include">
+          <e p="3DText.shader" t="Include" />
         </e>
         <e p="Standard Assets" t="Include">
           <e p="Characters" t="Include">
